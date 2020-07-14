@@ -1,0 +1,169 @@
+<html>  
+<head>  
+<meta charset="utf-8">
+  <head>
+    <meta name="description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <!-- Twitter meta-->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@pratikborsadiya">
+    <meta property="twitter:creator" content="@pratikborsadiya">
+    <!-- Open Graph Meta-->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vali Admin">
+    <meta property="og:title" content="Vali - Free Bootstrap 4 admin theme">
+    <meta property="og:url" content="http://pratikborsadiya.in/blog/vali-admin">
+    <meta property="og:image" content="http://pratikborsadiya.in/blog/vali-admin/hero-social.png">
+    <meta property="og:description" content="Vali is a responsive and free admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.">
+    <title>Basic Tables - Vali Admin</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+<script type="text/javascript" src="./spark-md5.js" ></script>  
+</head>  
+
+<body>  
+  
+<!-- <div id="box"></div>  -->
+
+<div class="row mt-5">
+    <div class="col-md-12">
+      <div class="tile">
+        <h3 class="tile-title">
+            <input class="btn btn-info" type="file" id="file" multiple="multiple" onchange="md()" />
+        </h3>
+        </div>
+    </div>
+</div>
+<div class="tile">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>文件名称</th>
+                </tr>
+              </thead>
+              <tbody id="box1">
+              </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>MD5码值</th>
+                </tr>
+              </thead>
+              <tbody id="box2">
+              </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- <button id="cal" type="button" onclick="calculate()">计算md5</button> -->  
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <!-- <script src="js/jquery-3.3.1.min.js"></script> -->
+    <!-- <script src="js/popper.min.js"></script> -->
+    <script src="js/bootstrap.min.js"></script>
+</body>  
+
+<script>  
+
+function md(){
+    var f_l=$("#file")[0].files.length; 
+    for(var i=0;i<f_l;i++){
+        // $("#box1").append('<tr><td>'+$("#file")[0].files[i].name+'</td></tr>');
+        calculate($("#file")[0].files[i]);
+    }
+}
+
+function calculate(el){  
+    var s=el;
+    var fileReader = new FileReader(),  
+        // box=document.getElementById('box');  
+        blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,  
+        file = s,  
+        chunkSize = 2097152,  
+        // read in chunks of 2MB  
+        chunks = Math.ceil(file.size / chunkSize),  
+        currentChunk = 0,  
+        spark = new SparkMD5();  
+  
+    fileReader.onload = function(e) {  
+        console.log("read chunk nr", currentChunk + 1, "of", chunks);  
+        spark.appendBinary(e.target.result); // append binary string  
+        currentChunk++;  
+  
+        if (currentChunk < chunks) {  
+            loadNext();  
+        }  
+        else {  
+            console.log("finished loading");
+            $("#box1").append('<tr><td>'+file.name+'</td></tr>');  
+            $("#box2").append('<tr><td>MD5 hash:  '+spark.end()+'</td><tr>');  
+            console.info("computed hash", spark.end()); // compute hash  
+        }  
+    };  
+  
+    function loadNext() {  
+        var start = currentChunk * chunkSize,  
+            end = start + chunkSize >= file.size ? file.size : start + chunkSize;  
+  
+        fileReader.readAsBinaryString(blobSlice.call(file, start, end));  
+    };  
+  
+    loadNext();  
+}  
+
+
+// function calculate(){
+//     var f_l=$("#file")[0].files.length; 
+//     for(var i=0;i<f_l;i++){
+//         $("#box1").append('<tr><td>'+$("#file")[0].files[i].name+'</td></tr>');
+//     var fileReader = new FileReader(),  
+//         // box=document.getElementById('box');  
+//         blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,  
+//         // file = document.getElementById("file").files[i], 
+//         file=$("#file")[0].files[i], 
+//         chunkSize = 2097152,  
+//         // read in chunks of 2MB  
+//         chunks = Math.ceil(file.size / chunkSize),  
+//         currentChunk = 0,  
+//         spark = new SparkMD5();  
+
+//     fileReader.onload = function(e) {  
+//         console.log("read chunk nr", currentChunk + 1, "of", chunks);  
+//         spark.appendBinary(e.target.result); // append binary string  
+//         currentChunk++;  
+
+//         if (currentChunk < chunks) {  
+//             loadNext();  
+//         }  
+//         else {  
+//             console.log("finished loading");  
+//             // box.innerText='MD5 hash:'+spark.end();
+//             $("#box2").append('<tr><td>MD5 hash:  '+spark.end()+'</td><tr>');  
+//             console.info("computed hash", spark.end()); // compute hash  
+//         }  
+//     };  
+
+//     function loadNext() {  
+//         var start = currentChunk * chunkSize,  
+//             end = start + chunkSize >= file.size ? file.size : start + chunkSize;  
+
+//         fileReader.readAsBinaryString(blobSlice.call(file, start, end));  
+//     };  
+
+//     loadNext(); 
+//     }
+// }  
+
+</script>  
+</html> 
